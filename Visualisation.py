@@ -1,5 +1,7 @@
 from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -90,7 +92,7 @@ app.layout = html.Div(style=div_style,
                                  ),
                         dcc.Graph('soccer_bar'),
                         html.Br(),
-                        dcc.Graph('win_pie')
+                        dcc.Graph('sub_pie_charts')
                       ]
                       )
 
@@ -123,16 +125,65 @@ def update_bar_charts(selected_dates):
 
 
 @app.callback(
-    Output('win_pie', 'figure'),
+    Output('sub_pie_charts', 'figure'),
     Input('month_selector', 'value')
 )
 def update_pie_charts(selected_dates):
     pie_df = _slice_months(wins_df, selected_dates)
-    fig_wins = px.pie(pie_df, values='Games', names='Winner', title=
-                      f'Win and Loss Distribution {selected_dates}'
-                      )
-    update_layout(fig_wins)
-    return fig_wins
+
+    def equal_players_selector():
+        return not_na['Gleichzahl'] == 1
+
+    overall_games = pie_df.shape[0]
+    na_games = len(pie_df['Gleichzahl'].isnull())
+    not_na = pie_df.loc[~pie_df['Gleichzahl'].isnull(), :]
+    equal_df = not_na.loc[equal_players_selector(), :]
+    unequal_df = not_na.loc[~equal_players_selector(), :]
+
+    sub_pie_fig = make_subplots(rows=1, cols=3, subplot_titles=
+                                ['All Games', 'Equal Players', 'Not Equal'],
+                                specs=[[{'type': 'domain'}, {'type': 'domain'},
+                                        {'type': 'domain'}
+                                        ]]
+                                )
+
+    sub_pie_fig.add_trace(go.Pie(values=pie_df['Games'],
+                                 labels=pie_df['Winner'],
+                                 ),
+                          row=1, col=1
+                          )
+
+    sub_pie_fig.add_trace(go.Pie(values=equal_df['Games'],
+                                 labels=equal_df['Winner']),
+                          row=1, col=2
+                          )
+
+    sub_pie_fig.add_trace(go.Pie(values=unequal_df['Games'],
+                                 labels=unequal_df['Winner']),
+                          row=1, col=3
+                          )
+
+    update_layout(sub_pie_fig)
+    sub_pie_fig.update_layout(title_text=f'Win and Loss Distribution, '
+                                         f'Dates: {selected_dates}')
+
+    return sub_pie_fig
+
+    # fig_wins = px.pie(pie_df, values='Games', names='Winner', title=
+    #                   f'Overall Win and Loss Distribution, '
+    #                   f'Dates: {selected_dates}',
+    #                   width=800, height=400
+    #                   )
+    # equal_df = pie_df.loc[pie_df['Gleichzahl'] == 1, :]
+    # fig_equals = px.pie(equal_df, values='Games', names='Winner', title=
+    #                     f'Equal Players Win and Loss Distribution Equal '
+    #                     f'Players, Dates: {selected_dates}',
+    #                     width=800, height=400)
+    # update_layout(fig_wins)
+    # return fig_wins, fig_equals
+
+
+
 
 
 if __name__ == '__main__':
