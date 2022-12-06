@@ -27,6 +27,14 @@ class StatsGetter(FileMerger):
         self.include_month_col()
         self._output = self.clean_data()
 
+    @property
+    def output(self):
+        return self._output
+
+    @output.setter
+    def output(self, value):
+        self._output = value
+
     def include_month_col(self):
         for key, df in self._dict_of_dfs.items():
             df['month'] = key
@@ -69,14 +77,6 @@ class StatsGetter(FileMerger):
         _df['Winner'] = _df.apply(lambda x: 'Alt' if x['Alt'] == 1 else (
             'Jung' if x['Alt'] == -1 else 'Unentschieden'), axis=1)
         return _df
-
-    @property
-    def output(self):
-        return self._output
-
-    @output.setter
-    def output(self, value):
-        self._output = value
 
 
 if __name__ == '__main__':
