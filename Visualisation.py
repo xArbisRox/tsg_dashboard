@@ -71,14 +71,34 @@ def update_layout(fig):
 
 app.layout = html.Div(style=div_style,
                       children=[
-                        html.H1('TSG Muenster 1b'),
+                        html.Div(style={
+                            'display': 'flex',
+                            'alignItems': 'center',
+                            'justifyContent': 'space-between'
+                        },
+                            children=[
+                            html.Img(src=r'static/tsg_logo.jpg', alt='image',
+                                     style={'width': '220px',
+                                            'height': 'auto',
+                                            'visibility': 'hidden'
+                                            }
+                                     ),
+                            html.H1('TSG Muenster 1b'),
+                            html.Img(src=r'static/tsg_logo.jpg', alt='image',
+                                     style={'width': '220px',
+                                            'height': 'auto',
+                                            }
+                                     ),
+                            ]
+                        ),
                         html.Div('Fußball Statistik',
                                  style={'fontStyle': 'italic'}),
                         html.Br(),
                         html.Div([html.P('Please select your months of '
                                          'interest!'),
                                   html.P('\'Overall\' represents the '
-                                         'complete available timeline'),
+                                         'complete available timeline',
+                                         style={'textAlign': 'center'}),
                                   dcc.Dropdown(id='month_selector',
                                                options=['Overall'] + wins_df[
                                                   'month'].unique().tolist(),
