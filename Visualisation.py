@@ -82,11 +82,6 @@ title_style = {'title_font_family': 'Simplifica, Arial, sans-serif',
                'title_font_size': 25
                }
 
-div_style = {'backgroundColor': '#0000FF',
-             'color': '#FFFFFF',
-             'textAlign': 'center',
-             'fontFamily': 'Arial, Helvetica, sans-serif'
-             }
 
 plot_style = {'grey': '#DCDCDC',
               'darkgrey': '#707070',
@@ -103,22 +98,21 @@ def update_layout(fig):
         **title_style)
 
 
-app.layout = html.Div(style=div_style,
+app.layout = html.Div(className='background-blue',
                       children=[
-                        html.Div(style={
-                            'display': 'flex',
-                            'alignItems': 'center',
-                            'justifyContent': 'space-between'
-                        },
-                            children=[
-                            html.Img(src=r'static/tsg_logo.jpg', alt='image',
+                        html.Div(className='flexbox flex-center '
+                                           'flex-space-between',
+                                 children=[
+                            html.Img(src=r'assets/images/tsg_logo.jpg',
+                                     alt='image',
                                      style={'width': '220px',
                                             'height': 'auto',
                                             'visibility': 'hidden'
                                             }
                                      ),
-                            html.H1('TSG Muenster 1b'),
-                            html.Img(src=r'static/tsg_logo.jpg', alt='image',
+                            html.H1('TSG Muenster 1b',
+                                    className='white-font center-text'),
+                            html.Img(src=r'assets/images/tsg_logo.jpg', alt='image',
                                      style={'width': '220px',
                                             'height': 'auto',
                                             }
@@ -126,28 +120,31 @@ app.layout = html.Div(style=div_style,
                             ]
                         ),
                         html.Div('Fußball Statistik',
+                                 className='white-font center-text italic-text',
                                  style={'fontStyle': 'italic'}),
                         html.Br(),
                         html.Div([html.P('Please select your months of '
-                                         'interest!'),
+                                         'interest!',
+                                         className='white-font center-text'),
                                   html.P('\'Overall\' represents the '
                                          'complete available timeline',
-                                         style={'textAlign': 'center'}),
+                                         className='white-font center-text'),
                                   dcc.Dropdown(id='month_selector',
+                                               className='center-text',
                                                options=['Overall'] + wins_df[
                                                   'month'].unique().tolist(),
                                                value='Overall',
-                                               multi=True,
-                                               style={'color': div_style[
-                                                  'backgroundColor']
-                                                     }
+                                               multi=True
                                                ),
                                   ]
                                  ),
                         dcc.Graph('soccer_bar'),
                         html.Br(),
-                        dcc.RadioItems(id='robin_selector', options=[
-                            'Inklusive Robin', 'Exklusive Robin'],
+                        dcc.RadioItems(id='robin_selector',
+                                       className='white-font center-text',
+                                       options=[
+                                          'Inklusive Robin', 'Exklusive Robin'
+                                       ],
                                        value='Inklusive Robin'),
                         dcc.Graph('sub_pie_charts'),
 
@@ -235,7 +232,11 @@ def update_pie_charts(selected_dates, robin):
 
         robin_section_style = {'display': 'flex',
                                'alignItems': 'center',
-                               'justifyContent': 'space-between'
+                               'justifyContent': 'space-between',
+                               # 'maxWidth': '1200px',
+                               # 'width': '100%',
+                               'maxHeight': '450px',
+                               'height': '100%'
                                }
         robin_fig = go.Figure(data=go.Pie(values=robin_df['Games'],
                                           labels=robin_df['Winner'],
@@ -247,20 +248,26 @@ def update_pie_charts(selected_dates, robin):
                                     )
                               )
         update_layout(robin_fig)
+
+        robin_happy = html.Img(id='robin_happy',
+                               className='flex-robin-images',
+                               src=r'assets/images/robin_happy.jpeg',
+                               alt='image'
+                               )
+
         robin_pie = dcc.Graph(id='robin_pie',
-                              figure=robin_fig,
-                              style={'flexBasis': '83%'}
+                              className='flex-robin-graph',
+                              figure=robin_fig
                               )
 
-        robin_pic = html.Img(id='robin_pic',
-                             src=r'static/robin_sick.jpeg', alt='image',
-                             style={'width': 'auto',
-                                    'height': '450px',
-                                    }
-                             )
+        robin_sick = html.Img(id='robin_sick',
+                              className='flex-robin-images',
+                              src=r'assets/images/robin_sick.jpeg', alt='image'
+                              )
 
+        robin_section_children.append(robin_happy)
         robin_section_children.append(robin_pie)
-        robin_section_children.append(robin_pic)
+        robin_section_children.append(robin_sick)
 
     overall_games = pie_df.shape[0]
     na_games = len(pie_df['Gleichzahl'].isnull())
