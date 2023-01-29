@@ -1,0 +1,42 @@
+div.background-blue{
+    background-color: #0000FF;
+}
+
+.white-font {
+    color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+.center-text {
+    text-align: center;
+}
+
+.italic-text {
+    font-style: italic;
+}
+
+.flexbox {
+    display: flex;
+
+}
+
+.flex-center {
+    align-items: center;
+}
+
+.flex-space-between {
+    justify-content: space-between;
+}
+
+.flex-robin-graph {
+    flex: 5;
+    max-height: 450px;
+}
+
+.flex-robin-images {
+    flex: 1;
+    max-height: 450px;
+    width: auto;
+    object-fit: cover;
+}
+
