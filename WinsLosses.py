@@ -16,6 +16,14 @@ class StatsGetter(FileMerger):
 
     def __init__(self, file_name, list_of_sheets, list_of_columns,
                  list_of_endrows):
+        """
+
+        :param file_name:
+        :param list_of_sheets:
+        :param list_of_columns: List of desired columns in 'A, B, ...,
+        X' Format. Last column should be the 'Robin' column!
+        :param list_of_endrows: Excel Row -1 (0-indexed)
+        """
         self.file = pd.ExcelFile(os.path.join(self.input_path, file_name))
         self._dict_of_dfs = {sheet: pd.read_excel(self.file,
                                                   sheet_name=sheet,
@@ -81,10 +89,12 @@ class StatsGetter(FileMerger):
 
 if __name__ == '__main__':
     obj = StatsGetter(file_name='Tore und Siege kicken.xlsx',
-                      list_of_sheets=['October-2022', 'November-2022'],
-                      list_of_columns=[*['A, B, E'], *['A, B, E, AR']],
-                      list_of_endrows=[11, 8])
-    df = obj.clean_data()
+                      list_of_sheets=['October-2022', 'November-2022',
+                                      'December-2022'],
+                      list_of_columns=[*['A, B, E, AF'], *['A, B, E, AR, AF'],
+                                       *['A, B, E, AR, AF']],
+                      list_of_endrows=[11, 8, 9])
+    df = obj.output
 
     print('test')
 
