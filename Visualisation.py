@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, dash_table, html, dcc, Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -85,8 +85,8 @@ title_style = {'title_font_family': 'Simplifica, Arial, sans-serif',
 
 plot_style = {'grey': '#DCDCDC',
               'darkgrey': '#707070',
-              'blue': '#0000FF',
-              'white': '#FFFFFF'
+              'blue': '#004f9a',
+              'white': '#e7e7e7'
               }
 
 
@@ -209,6 +209,7 @@ def update_pie_charts(selected_dates, robin):
                                                                 '3']
                                       )
                           )
+    robin_table = dash_table.DataTable()
 
     robin_section_style = {'display': 'none'}
     robin_section_children = []
@@ -227,8 +228,22 @@ def update_pie_charts(selected_dates, robin):
             return True
         return False
 
+    def prepare_line_df(in_df: pd.DataFrame, target_agg: str) -> pd.DataFrame:
+        assert target_agg in ['Alt', 'Jung', 'Unentschieden']
+        _df = in_df.rename({'Unnamed: 0': 'Date'}, axis=1)
+        _df.sort_values(by='Date', ascending=True, inplace=True)
+        _df['Date'] = _df['Date'].dt.strftime('%d.%m')
+        _df['target_win'] = _df['Winner'].map(
+            lambda x: 1 if x == target_agg else 0)
+        _df['trainings'] = _df['Date'].apply(lambda x: 1)
+        _df['counter'] = np.cumsum(_df['trainings'])
+        _df['Siege'] = np.cumsum(_df['target_win'])
+
+        return _df
+
     if without_robin():
         pie_df = no_robin_df
+        robin_df = prepare_line_df(in_df=robin_df, target_agg='Jung')
 
         robin_section_style = {'display': 'flex',
                                'alignItems': 'center',
@@ -249,6 +264,33 @@ def update_pie_charts(selected_dates, robin):
                               )
         update_layout(robin_fig)
 
+        robin_line_fig = go.Figure(
+            data=px.line(
+                robin_df,
+                x='Date',
+                y='Siege',
+                markers=True
+            ),
+            #ToDo Layout Title not displayed at all
+            layout=go.Layout(
+                title=go.layout.Title(
+                    text="Siege von Gesamtspielen")
+            )
+        )
+
+        robin_line_fig.update_xaxes(
+            showgrid=False
+        )
+        robin_line_fig.update_yaxes(
+            range=[0, len(robin_df.index)],
+            showgrid=False
+        )
+        robin_line_fig.update_traces(
+            line_color=plot_style['white']
+        )
+
+        update_layout(robin_line_fig)
+
         robin_happy = html.Img(id='robin_happy',
                                className='flex-robin-images',
                                src=r'assets/images/robin_happy.jpeg',
@@ -260,6 +302,10 @@ def update_pie_charts(selected_dates, robin):
                               figure=robin_fig
                               )
 
+        robin_line = dcc.Graph(id='robin_line',
+                              className='flex-robin-graph',
+                              figure=robin_line_fig)
+
         robin_sick = html.Img(id='robin_sick',
                               className='flex-robin-images',
                               src=r'assets/images/robin_sick.jpeg', alt='image'
@@ -267,6 +313,7 @@ def update_pie_charts(selected_dates, robin):
 
         robin_section_children.append(robin_happy)
         robin_section_children.append(robin_pie)
+        robin_section_children.append(robin_line)
         robin_section_children.append(robin_sick)
 
     overall_games = pie_df.shape[0]
