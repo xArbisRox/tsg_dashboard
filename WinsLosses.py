@@ -90,10 +90,13 @@ class StatsGetter(FileMerger):
 if __name__ == '__main__':
     obj = StatsGetter(file_name='Tore und Siege kicken.xlsx',
                       list_of_sheets=['October-2022', 'November-2022',
-                                      'December-2022'],
+                                      'December-2022', 'January-2023',
+                                      'February-2023'],
                       list_of_columns=[*['A, B, E, AF'], *['A, B, E, AR, AF'],
-                                       *['A, B, E, AR, AF']],
-                      list_of_endrows=[11, 8, 9])
+                                       *['A, B, E, AR, AF'],
+                                       *['A, B, E, AR, AF'],
+                                       *['A, B, E, AT, AF']],
+                      list_of_endrows=[11, 8, 9, 9, 10])
     df = obj.output
 
     print('test')
