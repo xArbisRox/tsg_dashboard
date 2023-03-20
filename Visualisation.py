@@ -70,10 +70,13 @@ def backfill_missing_months(_df: pd.DataFrame) -> pd.DataFrame:
 
 wins_df = StatsGetter(file_name='Tore und Siege kicken.xlsx',
                       list_of_sheets=['October-2022', 'November-2022',
-                                      'December-2022'],
+                                      'December-2022', 'January-2023',
+                                      'February-2023'],
                       list_of_columns=[*['A, B, E, AF'], *['A, B, E, AR, AF'],
-                                       *['A, B, E, AR, AF']],
-                      list_of_endrows=[11, 8, 9]).output
+                                       *['A, B, E, AR, AF'],
+                                       *['A, B, E, AR, AF'],
+                                       *['A, B, E, AT, AF']],
+                      list_of_endrows=[11, 8, 9, 9, 10]).output
 
 app = Dash(__name__)
 
