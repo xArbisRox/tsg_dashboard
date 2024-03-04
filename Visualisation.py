@@ -227,12 +227,10 @@ def update_pie_charts(selected_dates, robin):
         return not_na['Gleichzahl'] == 1
 
     def without_robin() -> bool:
-        if robin == 'Exklusive Robin':
-            return True
-        return False
+        return robin == 'Exklusive Robin'
 
     def prepare_line_df(in_df: pd.DataFrame, target_agg: str) -> pd.DataFrame:
-        assert target_agg in ['Alt', 'Jung', 'Unentschieden']
+        assert target_agg in {'Alt', 'Jung', 'Unentschieden'}
         _df = in_df.rename({'Unnamed: 0': 'Date'}, axis=1)
         _df.sort_values(by='Date', ascending=True, inplace=True)
         _df['Date'] = _df['Date'].dt.strftime('%d.%m')
